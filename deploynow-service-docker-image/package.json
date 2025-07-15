@@ -1,0 +1,13 @@
+{
+  "name": "deploynow-builder",
+  "version": "1.0.0",
+  "description": "Docker build runner for dynamic project builds and S3 upload (builder only)",
+  "main": "script.js",
+  "type": "commonjs",
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.842.0",
+    "@clickhouse/client": "^1.11.2",
+    "dotenv": "^17.0.1",
+    "mime-types": "^2.1.35"
+  }
+}

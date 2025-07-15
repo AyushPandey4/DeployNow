@@ -1,0 +1,33 @@
+# Node modules in any folder
+**/node_modules/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+.env.*
+
+# OS/System files
+.DS_Store
+Thumbs.db
+
+# Optional npm/yarn files
+package-lock.json
+yarn.lock
+.pnpm-debug.log
+
+# Docker artifacts (optional based on usage)
+*.tar
+docker-compose.override.yml
+
+# Build output (if applicable)
+dist/
+build/
+
+# Ignore local Redis or database volumes if added
+volumes/
