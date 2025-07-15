@@ -100,7 +100,7 @@ export default function LandingPage() {
 
       {/* Sticky GitHub Star Button */}
       <a
-        href="https://github.com/ayushpandey2001/deploynow"
+        href="https://github.com/AyushPandey4/DeployNow"
         target="_blank"
         rel="noopener noreferrer"
         className="fixed top-6 right-6 z-50 flex items-center gap-2 bg-[#23255A] text-white px-4 py-2 rounded-full shadow-lg hover:scale-105 transition-transform border border-white/10"
@@ -361,7 +361,7 @@ export default function LandingPage() {
       <footer className="py-12 bg-[#23255A] text-center text-white">
         <div className="mb-2 text-xl font-bold">DeployNow</div>
         <a
-          href="https://github.com/ayushpandey2001/deploynow"
+          href="https://github.com/AyushPandey4/DeployNow"
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center gap-2 text-[#8BA9FF] hover:underline font-semibold"
