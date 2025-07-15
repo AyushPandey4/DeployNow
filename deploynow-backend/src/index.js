@@ -25,4 +25,4 @@ app.get("/ping", (req, res) => {
 app.listen(port, () => {
   console.log(`🚀 Backend running on http://localhost:${port}`);
 });
-require('../queue/ecsWorker.js');
+require('./queue/ecsWorker.js');
