@@ -1,18 +1,14 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useProject } from "../../context/ProjectContext";
 import { Loader2, ExternalLink, RefreshCw } from "lucide-react";
 import { useUser } from "../../context/UserContext";
 
+
 // Framework badge/icon helper
 const frameworkBadge = (fw) => {
-  const color =
-    fw === "React"
-      ? "#61dafb"
-      : fw === "Static"
-      ? "#8BA9FF"
-      : "#5D5FEF";
+  const color = "#A3A3A3"; // Light Grey for all frameworks
   const icon =
     fw === "React" ? (
       <svg
@@ -22,8 +18,8 @@ const frameworkBadge = (fw) => {
         fill="none"
         className="mr-1"
       >
-        <circle cx="16" cy="16" r="2.5" fill="#61dafb" />
-        <g stroke="#61dafb" strokeWidth="2">
+        <circle cx="16" cy="16" r="2.5" fill={color} />
+        <g stroke={color} strokeWidth="2">
           <ellipse
             rx="12"
             ry="5"
@@ -57,21 +53,21 @@ const frameworkBadge = (fw) => {
 const statusBadge = (status) => {
   if (status === "deployed")
     return (
-      <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-green-600/10 text-green-400 font-semibold text-xs">
-        <span className="w-2 h-2 rounded-full bg-green-400 inline-block"></span>
+      <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[#16A34A]/20 text-[#16A34A] font-semibold text-xs">
+        <span className="w-2 h-2 rounded-full bg-[#16A34A]"></span>
         Deployed
       </span>
     );
   if (status === "deploying" || status === "building")
     return (
-      <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-yellow-500/10 text-yellow-400 font-semibold text-xs animate-pulse">
-        <span className="w-2 h-2 rounded-full bg-yellow-400 inline-block"></span>
+      <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[#737373]/20 text-[#737373] font-semibold text-xs animate-pulse">
+        <span className="w-2 h-2 rounded-full bg-[#737373]"></span>
         Building
       </span>
     );
   return (
-    <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-red-500/10 text-red-400 font-semibold text-xs">
-      <span className="w-2 h-2 rounded-full bg-red-400 inline-block"></span>
+    <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-red-500/20 text-red-400 font-semibold text-xs">
+      <span className="w-2 h-2 rounded-full bg-red-400"></span>
       Failed
     </span>
   );
@@ -79,6 +75,7 @@ const statusBadge = (status) => {
 
 export default function ProjectDetailsPage() {
   const { id } = useParams();
+  const router = useRouter();
   const { getUser } = useUser();
   const { getProjectDetails, redeployProject } = useProject();
   const [project, setProject] = useState(null);
@@ -98,11 +95,10 @@ export default function ProjectDetailsPage() {
     const u = getUser();
     if (u) {
       setUser(u);
-      // console.log("User fetched:", u);
     } else {
       router.replace("/");
     }
-  }, [getUser]);
+  }, [getUser, router]);
 
   useEffect(() => {
     const fetchDetails = async () => {
@@ -135,7 +131,7 @@ export default function ProjectDetailsPage() {
       await redeployProject(id, envVars);
       alert("Redeploy initiated successfully!");
       setEnvVarsEdited(false);
-      window.location.href = "/dashboard";
+      router.push("/dashboard");
     } catch (err) {
       alert("Failed to redeploy project. Please try again.");
     }
@@ -143,100 +139,104 @@ export default function ProjectDetailsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 text-slate-900 dark:text-white">
-      {/* Header */}
-      <div className="sticky top-0 z-10 backdrop-blur-lg bg-white/80 dark:bg-slate-900/80 border-b border-slate-200 dark:border-slate-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div>
-              <h1 className="text-2xl font-bold flex items-center gap-2">
-                🛠️ Project Details
-                {project && (
-                  <span className="ml-3">{statusBadge(project.status)}</span>
-                )}
-              </h1>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                Project ID: {id}
-              </p>
-            </div>
-            <button
-              onClick={handleRedeploy}
-              disabled={!envVarsEdited || redeploying}
-              className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold 
-                ${
-                  envVarsEdited && !redeploying
-                    ? "bg-indigo-600 hover:bg-indigo-700 text-white"
-                    : "bg-slate-100 dark:bg-slate-800 text-slate-400"
-                } transition-all`}
-            >
-              {redeploying ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <RefreshCw className="w-4 h-4" />
-              )}
-              {redeploying ? "Redeploying..." : "Redeploy"}
-            </button>
-          </div>
-        </div>
+    <div className="min-h-screen bg-[#171717] text-[#D4D4D4] font-sans">
+      {/* Animated Background */}
+      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#171717] via-[#2D2D2D]/10 to-[#171717] opacity-90" />
+        <div className="absolute top-1/5 left-1/5 w-56 h-56 bg-[#A3A3A3]/10 rounded-full blur-3xl animate-pulse-slow" />
+        <div className="absolute bottom-1/4 right-1/4 w-48 h-48 bg-[#737373]/10 rounded-full blur-3xl animate-pulse-slow delay-1000" />
       </div>
+
+      {/* Header */}
+      <header className="sticky top-0 z-10 bg-[#171717]/80 backdrop-blur-lg border-b border-[#2D2D2D]/20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold flex items-center gap-2">
+              <span className="text-[#A3A3A3]">🛠️</span>
+              Project Details
+              {project && (
+                <span className="ml-3">{statusBadge(project.status)}</span>
+              )}
+            </h1>
+            <p className="text-xs text-[#D4D4D4]/60 mt-1">Project ID: {id}</p>
+          </div>
+          <button
+            onClick={handleRedeploy}
+            disabled={!envVarsEdited || redeploying}
+            className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold 
+              ${
+                envVarsEdited && !redeploying
+                  ? "bg-[#A3A3A3] hover:bg-[#737373] text-[#171717]"
+                  : "bg-[#2D2D2D]/50 text-[#D4D4D4]/50"
+              } transition-all shadow-md hover:shadow-[#737373]/20`}
+          >
+            {redeploying ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <RefreshCw className="w-4 h-4" />
+            )}
+            {redeploying ? "Redeploying..." : "Redeploy"}
+          </button>
+        </div>
+      </header>
 
       {/* Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {loading ? (
           <div className="flex justify-center py-20">
-            <Loader2 className="w-8 h-8 animate-spin text-indigo-600 dark:text-indigo-400" />
+            <Loader2 className="w-8 h-8 animate-spin text-[#A3A3A3]" />
           </div>
         ) : project ? (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Project Info Card */}
-            <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-6 border border-slate-200 dark:border-slate-700">
-              <h2 className="text-lg font-semibold mb-4 text-slate-900 dark:text-white">
+            <div className="bg-[#2D2D2D]/20 rounded-lg shadow-lg p-6 border border-[#2D2D2D]/50 backdrop-blur-lg animate-fadeIn">
+              <h2 className="text-lg font-semibold mb-4 text-white">
                 Project Information
               </h2>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">
+                  <label className="block text-sm font-medium text-[#D4D4D4]/60 mb-1">
                     Repository URL
                   </label>
                   <a
                     href={project.repo_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-indigo-600 dark:text-indigo-400 hover:underline break-all"
+                    className="text-[#A3A3A3] hover:text-[#737373] break-all transition-colors"
                   >
                     {project.repo_url}
                   </a>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">
+                  <label className="block text-sm font-medium text-[#D4D4D4]/60 mb-1">
                     Framework
                   </label>
                   {frameworkBadge(project.framework)}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">
+                  <label className="block text-sm font-medium text-[#D4D4D4]/60 mb-1">
                     Status
                   </label>
                   {statusBadge(project.status)}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">
+                  <label className="block text-sm font-medium text-[#D4D4D4]/60 mb-1">
                     Created At
                   </label>
-                  <span className="text-slate-700 dark:text-slate-300">
+                  <span className="text-[#D4D4D4]">
                     {new Date(project.created_at).toLocaleString()}
                   </span>
                 </div>
                 {project.preview_url && (
                   <div>
-                    <label className="block text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">
+                    <label className="block text-sm font-medium text-[#D4D4D4]/60 mb-1">
                       Preview URL
                     </label>
                     <a
                       href={project.preview_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 text-sm bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors"
+                      className="inline-flex items-center gap-2 text-sm bg-[#A3A3A3] text-[#171717] px-4 py-2 rounded-lg hover:bg-[#737373] transition-colors shadow-md hover:shadow-[#737373]/20"
                     >
                       <ExternalLink className="w-4 h-4" />
                       Open Preview
@@ -247,58 +247,56 @@ export default function ProjectDetailsPage() {
             </div>
 
             {/* Environment Variables Card */}
-            <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-6 border border-slate-200 dark:border-slate-700">
-              <h2 className="text-lg font-semibold mb-4 text-slate-900 dark:text-white">
+            <div className="bg-[#2D2D2D]/20 rounded-lg shadow-lg p-6 border border-[#2D2D2D]/50 backdrop-blur-lg animate-fadeIn">
+              <h2 className="text-lg font-semibold mb-4 text-white">
                 Environment Variables
               </h2>
               <div className="mb-4">
-                <div className="bg-slate-50 dark:bg-slate-900 rounded-lg p-4 font-mono text-sm">
+                <div className="bg-[#2D2D2D]/50 rounded-lg p-4 font-mono text-sm">
                   {envVars.trim() ? (
                     envVars.split("\n").map((line, i) => (
-                      <div key={i} className="text-slate-700 dark:text-slate-300">
+                      <div key={i} className="text-[#D4D4D4]">
                         {line}
                       </div>
                     ))
                   ) : (
-                    <span className="text-slate-400">
+                    <span className="text-[#D4D4D4]/60">
                       No environment variables set
                     </span>
                   )}
                 </div>
               </div>
               <textarea
-                className="w-full p-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 
-                          text-slate-900 dark:text-slate-100 font-mono text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                className="w-full p-3 rounded-lg border border-[#2D2D2D]/50 bg-[#2D2D2D]/50 text-[#D4D4D4] font-mono text-sm focus:ring-2 focus:ring-[#A3A3A3] focus:border-transparent"
                 rows={4}
                 value={envVars}
                 onChange={handleEnvVarsChange}
                 placeholder="KEY=value"
               />
               {envVarsEdited && (
-                <p className="mt-2 text-sm text-indigo-600 dark:text-indigo-400">
+                <p className="mt-2 text-sm text-[#A3A3A3]">
                   Changes detected. Click Redeploy to update.
                 </p>
               )}
             </div>
           </div>
         ) : (
-          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 text-red-600 dark:text-red-400">
+          <div className="bg-red-900/20 border border-red-800 rounded-lg p-4 text-red-400 animate-fadeIn">
             Project details not found.
           </div>
         )}
 
         {/* Logs Section */}
         <div className="mt-8">
-          <h2 className="text-lg font-semibold mb-4 text-slate-900 dark:text-white">
+          <h2 className="text-lg font-semibold mb-4 text-white">
             Deployment Logs
           </h2>
           <div
             ref={logsRef}
-            className="bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700 
-                        p-4 font-mono text-sm h-[400px] overflow-auto"
+            className="bg-[#2D2D2D]/50 rounded-lg border border-[#2D2D2D]/50 p-4 font-mono text-sm h-[400px] overflow-auto backdrop-blur-lg animate-fadeIn"
           >
             {logs.length === 0 ? (
-              <p className="text-slate-400">No logs available.</p>
+              <p className="text-[#D4D4D4]/60">No logs available.</p>
             ) : (
               logs.map((log, index) => (
                 <pre
@@ -306,12 +304,12 @@ export default function ProjectDetailsPage() {
                   className={`whitespace-pre-wrap mb-1
                   ${
                     /error|fail/i.test(log.message)
-                      ? "text-red-500"
+                      ? "text-red-400"
                       : /warn/i.test(log.message)
-                      ? "text-yellow-500"
+                      ? "text-yellow-400"
                       : /success|deployed/i.test(log.message)
-                      ? "text-green-500"
-                      : "text-slate-600 dark:text-slate-300"
+                      ? "text-[#16A34A]"
+                      : "text-[#D4D4D4]"
                   }`}
                 >
                   [{log.timestamp}] {log.message}
@@ -321,6 +319,38 @@ export default function ProjectDetailsPage() {
           </div>
         </div>
       </div>
+
+      <style jsx global>{`
+        @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+        body {
+          font-family: "Inter", sans-serif;
+        }
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(4px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.3s ease-out forwards;
+        }
+        .animate-pulse-slow {
+          animation: pulse 8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+          0%,
+          100% {
+            opacity: 1;
+          }
+          50% {
+            opacity: 0.4;
+          }
+        }
+      `}</style>
     </div>
   );
 }
