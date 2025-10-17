@@ -25,8 +25,8 @@ async function runECSTask(project) {
             { name: "PROJECT_ID", value: PROJECT_ID },
             { name: "GIT_REPOSITORY__URL", value: GIT_REPOSITORY__URL },
             { name: "USER_ENV_VARS", value: env_vars },
-            { name: "AWS_ACCESS_KEY", value: process.env.AWS_ACCESS_KEY },
-            { name: "AWS_SECRET_KEY", value: process.env.AWS_SECRET_KEY },
+            { name: "AWS_ACCESS_KEY_ID", value: process.env.AWS_ACCESS_KEY },
+            { name: "AWS_SECRET_ACCESS_KEY", value: process.env.AWS_SECRET_KEY },
             { name: "SUPABASE_URL", value: process.env.SUPABASE_URL },
             {
               name: "SUPABASE_SERVICE_ROLE_KEY",
