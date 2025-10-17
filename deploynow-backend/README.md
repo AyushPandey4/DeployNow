@@ -1,9 +1,8 @@
-# DeployNow — Backend
+# DeployNow Backend
 
-This repository contains the backend API for DeployNow: a small service that
-authenticates users via GitHub OAuth, stores user/project metadata in Supabase,
-accepts requests to build and deploy public GitHub repos to an ECS Fargate
-builder task, and stores build logs and preview URLs (S3) for each project.
+## Overview
+
+Express.js backend service powering DeployNow's automated deployment platform. Handles GitHub OAuth authentication, project management via Supabase, asynchronous deployments using Redis queues and AWS ECS, and S3-based deployment previews.
 
 This README documents the API surface, queue/worker behavior, and the exact
 environment variables the service expects.

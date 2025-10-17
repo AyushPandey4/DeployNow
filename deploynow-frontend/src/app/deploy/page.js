@@ -1,16 +1,46 @@
 "use client";
+
 import { useEffect, useState, useRef } from "react";
-import { Loader2, Rocket, Github, ChevronDown, ChevronUp } from "lucide-react";
+import {
+  Loader2,
+  Rocket,
+  Github,
+  ChevronDown,
+  ChevronUp,
+  Check,
+  GitBranch,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useProject } from "../context/ProjectContext";
 
+// --- Custom Hook for Mouse Position ---
+const useMousePosition = () => {
+  const [mousePosition, setMousePosition] = useState({ x: null, y: null });
+  useEffect(() => {
+    const updateMousePosition = (ev) =>
+      setMousePosition({ x: ev.clientX, y: ev.clientY });
+    window.addEventListener("mousemove", updateMousePosition);
+    return () => window.removeEventListener("mousemove", updateMousePosition);
+  }, []);
+  return mousePosition;
+};
+
+// --- Frameworks Data ---
 const frameworks = [
-  { name: "React", icon: <Rocket className="w-4 h-4" /> },
-  { name: "Static", icon: <span className="font-bold text-[#A3A3A3]">S</span> },
+  { name: "React", icon: <Rocket className="w-5 h-5 text-sky-400" /> },
+  {
+    name: "Static",
+    icon: <span className="font-bold text-slate-400 text-lg">H</span>,
+  },
 ];
 
+// --- Main Deploy Page Component ---
 export default function DeployPage() {
   const { getRepos, deployProject } = useProject();
+  const router = useRouter();
+  const mousePosition = useMousePosition();
+
+  // State Management
   const [repos, setRepos] = useState([]);
   const [selectedRepo, setSelectedRepo] = useState("");
   const [framework, setFramework] = useState("React");
@@ -20,9 +50,9 @@ export default function DeployPage() {
   const [isEnvVarsOpen, setIsEnvVarsOpen] = useState(false);
   const [isRepoDropdownOpen, setIsRepoDropdownOpen] = useState(false);
 
-  const router = useRouter();
   const dropdownRef = useRef(null);
 
+  // --- Logic Hooks ---
   useEffect(() => {
     (async () => {
       setLoadingRepos(true);
@@ -46,11 +76,7 @@ export default function DeployPage() {
     if (!selectedRepo || !framework) return;
     setSubmitting(true);
     try {
-      await deployProject({
-        repo_url: selectedRepo,
-        framework,
-        envVars: envVars,
-      });
+      await deployProject({ repo_url: selectedRepo, framework, envVars });
       router.push("/dashboard");
     } catch (err) {
       console.error("Deployment failed", err);
@@ -65,247 +91,223 @@ export default function DeployPage() {
     "Choose a repository";
 
   return (
-    <div className="min-h-screen bg-[#171717] text-[#D4D4D4] font-sans">
-      {/* Animated Background */}
-      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#171717] via-[#2D2D2D]/10 to-[#171717] opacity-90" />
-        <div className="absolute top-1/4 left-1/6 w-64 h-64 bg-[#A3A3A3]/10 rounded-full blur-3xl animate-pulse-slow" />
-        <div className="absolute bottom-1/3 right-1/5 w-56 h-56 bg-[#737373]/10 rounded-full blur-3xl animate-pulse-slow delay-1000" />
+    <div className="min-h-screen bg-[#0A0A1A] text-slate-300 font-sans antialiased">
+      {/* Dynamic Background */}
+      <div
+        className="fixed inset-0 z-0 pointer-events-none"
+        style={{
+          "--mouse-x": `${mousePosition.x}px`,
+          "--mouse-y": `${mousePosition.y}px`,
+        }}
+      >
+        <div className="absolute inset-0 grid-bg"></div>
+        <div className="absolute inset-0 spotlight"></div>
       </div>
 
       {/* Header */}
-      <header className="sticky top-0 z-20 bg-[#171717]/80 backdrop-blur-lg border-b border-[#2D2D2D]/30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-          <h1 className="text-2xl font-semibold flex items-center gap-3">
-            <span className="text-[#A3A3A3]">
-              <Rocket className="w-6 h-6" />
-            </span>
-            Deploy New Project
-          </h1>
-          <div className="text-sm text-[#D4D4D4]/60">
-            {new Date().toLocaleString("en-US", {
-              weekday: "long",
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            })}
+      <header className="sticky top-0 z-20 bg-[#0A0A1A]/50 backdrop-blur-xl">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center border-b border-white/10">
+          <div className="flex items-center gap-3">
+            <Rocket className="w-7 h-7 text-violet-400" />
+            <h1 className="text-xl font-bold text-white">Deploy New Project</h1>
           </div>
         </div>
       </header>
 
       {/* Content */}
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Progress Stepper */}
-        <div className="flex items-center gap-4 mb-8">
-          <div className="flex items-center gap-2">
-            <span className="w-8 h-8 flex items-center justify-center rounded-full bg-[#A3A3A3] text-[#171717] font-semibold">
-              1
-            </span>
-            <span className="text-sm font-medium">Select Repository</span>
-          </div>
-          <div className="h-px bg-[#2D2D2D] flex-1" />
-          <div className="flex items-center gap-2">
-            <span
-              className={`w-8 h-8 flex items-center justify-center rounded-full ${
-                selectedRepo
-                  ? "bg-[#A3A3A3] text-[#171717]"
-                  : "bg-[#2D2D2D]/50 text-[#D4D4D4]/50"
-              } font-semibold`}
-            >
-              2
-            </span>
-            <span className="text-sm font-medium">Configure Settings</span>
-          </div>
-          <div className="h-px bg-[#2D2D2D] flex-1" />
-          <div className="flex items-center gap-2">
-            <span
-              className={`w-8 h-8 flex items-center justify-center rounded-full ${
-                selectedRepo && framework
-                  ? "bg-[#A3A3A3] text-[#171717]"
-                  : "bg-[#2D2D2D]/50 text-[#D4D4D4]/50"
-              } font-semibold`}
-            >
-              3
-            </span>
-            <span className="text-sm font-medium">Deploy</span>
-          </div>
-        </div>
-
-        {/* Main Content */}
-        <div className="bg-[#2D2D2D]/20 rounded-xl shadow-2xl border border-[#2D2D2D]/30 backdrop-blur-lg p-8 animate-fadeIn">
+      <main className="relative z-10 max-w-4xl mx-auto px-6 py-12">
+        <div className="p-8 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl shadow-violet-500/10 animate-fade-in">
           {/* Repository Selection */}
           <div className="mb-8">
-            <label className="block text-sm font-medium text-[#D4D4D4]/60 mb-3">
-              <span className="inline-flex items-center gap-2">
-                <Github className="w-5 h-5 text-[#A3A3A3]" />
-                Select GitHub Repository
+            <label className="flex items-center gap-3 text-lg font-semibold text-white mb-4">
+              <span className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-violet-600 to-sky-500 text-white font-bold">
+                1
               </span>
+              Select Repository
             </label>
             {loadingRepos ? (
-              <div className="flex items-center gap-3 text-[#D4D4D4]/60 bg-[#2D2D2D]/50 rounded-lg p-4">
-                <Loader2 className="w-5 h-5 animate-spin text-[#A3A3A3]" />
-                Fetching repositories...
+              <div className="h-14 flex items-center gap-3 px-4 text-slate-400 bg-white/5 rounded-lg border border-white/10">
+                <Loader2 className="w-5 h-5 animate-spin" /> Fetching
+                repositories...
               </div>
             ) : (
               <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={() => setIsRepoDropdownOpen(!isRepoDropdownOpen)}
-                  className="w-full px-4 py-3 rounded-lg bg-[#171717]/80 border border-[#2D2D2D]/50 text-[#D4D4D4] flex items-center justify-between hover:bg-[#2D2D2D]/80 transition-all"
+                  className="w-full h-14 px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-slate-300 flex items-center justify-between hover:bg-white/10 transition-all"
                 >
                   <span className="flex items-center gap-2">
-                    <Github className="w-5 h-5 text-[#A3A3A3]" />
-                    {selectedRepoName}
+                    <Github className="w-5 h-5" /> {selectedRepoName}
                   </span>
                   <ChevronDown
-                    className={`w-5 h-5 text-[#A3A3A3] transition-transform ${
+                    className={`w-5 h-5 transition-transform ${
                       isRepoDropdownOpen ? "rotate-180" : ""
                     }`}
                   />
                 </button>
                 {isRepoDropdownOpen && (
-                  <div className="absolute z-10 w-full mt-2 bg-[#171717]/90 backdrop-blur-lg border border-[#2D2D2D]/50 rounded-lg shadow-xl max-h-60 overflow-auto animate-slideDown">
-                    {repos.length === 0 ? (
-                      <div className="px-4 py-3 text-[#D4D4D4]/60">
-                        No repositories found
-                      </div>
-                    ) : (
-                      repos.map((repo) => (
-                        <button
-                          key={repo.id}
-                          onClick={() => {
-                            setSelectedRepo(repo.html_url);
-                            setIsRepoDropdownOpen(false);
-                          }}
-                          className="w-full px-4 py-3 text-left text-[#D4D4D4] hover:bg-[#2D2D2D]/80 hover:text-[#A3A3A3] transition-all"
-                        >
-                          {repo.full_name}
-                        </button>
-                      ))
-                    )}
+                  <div className="absolute z-10 w-full mt-2 bg-[#101020]/90 backdrop-blur-lg border border-white/10 rounded-lg shadow-xl max-h-60 overflow-auto animate-slide-down">
+                    {repos.map((repo) => (
+                      <button
+                        key={repo.id}
+                        onClick={() => {
+                          setSelectedRepo(repo.html_url);
+                          setIsRepoDropdownOpen(false);
+                        }}
+                        className="w-full px-4 py-3 text-left text-slate-300 hover:bg-violet-500/20 hover:text-violet-300 transition-colors flex items-center gap-3"
+                      >
+                        <GitBranch className="w-4 h-4 text-slate-500" />{" "}
+                        {repo.full_name}
+                      </button>
+                    ))}
                   </div>
                 )}
               </div>
             )}
           </div>
 
-          {/* Framework Selection */}
-          <div className="mb-8">
-            <label className="block text-sm font-medium text-[#D4D4D4]/60 mb-3">
-              Framework
+          {/*  Configure & Deploy */}
+          <div
+            className={`transition-opacity duration-500 ${
+              selectedRepo ? "opacity-100" : "opacity-40 pointer-events-none"
+            }`}
+          >
+            <label className="flex items-center gap-3 text-lg font-semibold text-white mb-4">
+              <span className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-violet-600 to-sky-500 text-white font-bold">
+                2
+              </span>
+              Configure & Deploy
             </label>
-            <div className="grid grid-cols-2 gap-4">
-              {frameworks.map((fw) => (
+
+            <div className="p-6 rounded-lg bg-white/5 border border-white/10">
+              {/* Framework Selection */}
+              <div className="mb-6">
+                <h3 className="text-sm font-medium text-slate-400 mb-3">
+                  Framework Preset
+                </h3>
+                <div className="grid grid-cols-2 gap-4">
+                  {frameworks.map((fw) => (
+                    <button
+                      key={fw.name}
+                      type="button"
+                      onClick={() => setFramework(fw.name)}
+                      className={`relative flex items-center gap-3 px-4 py-3 rounded-lg border transition-all ${
+                        framework === fw.name
+                          ? "bg-sky-500/20 border-sky-400 text-sky-300"
+                          : "bg-white/5 border-white/10 text-slate-300 hover:bg-white/10 hover:border-white/20"
+                      }`}
+                    >
+                      {fw.icon}
+                      <span className="font-semibold">{fw.name}</span>
+                      {framework === fw.name && (
+                        <Check className="w-5 h-5 absolute top-2 right-2 text-sky-400" />
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Environment Variables */}
+              <div className="mb-6">
                 <button
-                  key={fw.name}
-                  type="button"
-                  onClick={() => setFramework(fw.name)}
-                  className={`flex items-center gap-3 px-6 py-4 rounded-lg border border-[#2D2D2D]/50 transition-all ${
-                    framework === fw.name
-                      ? "bg-[#A3A3A3] text-[#171717] shadow-lg"
-                      : "bg-[#2D2D2D]/50 text-[#D4D4D4] hover:bg-[#2D2D2D]/80 hover:shadow-[#737373]/20"
-                  }`}
+                  onClick={() => setIsEnvVarsOpen(!isEnvVarsOpen)}
+                  className="flex items-center justify-between w-full"
                 >
-                  {fw.icon}
-                  <span className="font-medium">{fw.name}</span>
+                  <h3 className="text-sm font-medium text-slate-400">
+                    Environment Variables
+                  </h3>
+                  {isEnvVarsOpen ? (
+                    <ChevronUp className="w-5 h-5 text-slate-500" />
+                  ) : (
+                    <ChevronDown className="w-5 h-5 text-slate-500" />
+                  )}
                 </button>
-              ))}
+                {isEnvVarsOpen && (
+                  <div className="mt-3 animate-slide-down">
+                    <textarea
+                      value={envVars}
+                      onChange={(e) => setEnvVars(e.target.value)}
+                      placeholder="KEY=VALUE"
+                      rows={4}
+                      className="w-full px-4 py-3 rounded-lg bg-black/30 border border-white/10 text-slate-300 font-mono text-sm focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all"
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Deploy Action */}
+              <div className="flex justify-end pt-6 border-t border-white/10">
+                <button
+                  onClick={handleDeploy}
+                  disabled={submitting || !selectedRepo || !framework}
+                  className="group relative inline-flex items-center justify-center gap-3 px-8 py-3 bg-gradient-to-br from-violet-600 to-sky-500 text-white text-base font-bold rounded-lg shadow-[0_0_20px_rgba(127,0,255,0.4)] hover:shadow-[0_0_30px_rgba(0,191,255,0.6)] transition-all duration-300 transform hover:scale-105 disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none disabled:scale-100"
+                >
+                  {submitting ? (
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                  ) : (
+                    <Rocket className="w-5 h-5" />
+                  )}
+                  <span>{submitting ? "Deploying..." : "Deploy"}</span>
+                </button>
+              </div>
             </div>
           </div>
-
-          {/* Environment Variables */}
-          <div className="mb-8">
-            <button
-              onClick={() => setIsEnvVarsOpen(!isEnvVarsOpen)}
-              className="flex items-center justify-between w-full px-4 py-3 rounded-lg bg-[#2D2D2D]/50 border border-[#2D2D2D]/50 text-[#D4D4D4] hover:bg-[#2D2D2D]/80 transition-all"
-            >
-              <span className="text-sm font-medium text-[#D4D4D4]/60">
-                Environment Variables (Optional)
-              </span>
-              {isEnvVarsOpen ? (
-                <ChevronUp className="w-5 h-5 text-[#A3A3A3]" />
-              ) : (
-                <ChevronDown className="w-5 h-5 text-[#A3A3A3]" />
-              )}
-            </button>
-            {isEnvVarsOpen && (
-              <div className="mt-3 animate-slideDown">
-                <textarea
-                  value={envVars}
-                  onChange={(e) => setEnvVars(e.target.value)}
-                  placeholder={`KEY=value\nANOTHER_KEY=another_value`}
-                  rows={5}
-                  className="w-full px-4 py-3 rounded-lg bg-[#2D2D2D]/50 border border-[#2D2D2D]/50 text-[#D4D4D4] font-mono text-sm focus:ring-2 focus:ring-[#A3A3A3] focus:border-transparent transition-all"
-                />
-                <p className="mt-2 text-xs text-[#D4D4D4]/60">
-                  Enter environment variables in KEY=value format, one per line
-                </p>
-              </div>
-            )}
-          </div>
-
-          {/* Deploy Action */}
-          <div className="flex justify-end">
-            <button
-              onClick={handleDeploy}
-              disabled={submitting || !selectedRepo || !framework}
-              className={`flex items-center gap-3 px-6 py-3 rounded-lg font-semibold text-base transition-all ${
-                !submitting && selectedRepo && framework
-                  ? "bg-[#A3A3A3] hover:bg-[#737373] text-[#171717] shadow-lg hover:shadow-[#737373]/30"
-                  : "bg-[#2D2D2D]/50 text-[#D4D4D4]/50 cursor-not-allowed"
-              }`}
-            >
-              {submitting ? (
-                <Loader2 className="w-5 h-5 animate-spin text-[#171717]" />
-              ) : (
-                <Rocket className="w-5 h-5 text-[#16A34A]" />
-              )}
-              {submitting ? "Deploying..." : "Deploy Project"}
-            </button>
-          </div>
         </div>
-      </div>
+      </main>
 
       <style jsx global>{`
-        @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+        @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
         body {
           font-family: "Inter", sans-serif;
         }
-        @keyframes fadeIn {
+
+        .grid-bg {
+          background-image: linear-gradient(
+              to right,
+              rgba(255, 255, 255, 0.07) 1px,
+              transparent 1px
+            ),
+            linear-gradient(
+              to bottom,
+              rgba(255, 255, 255, 0.07) 1px,
+              transparent 1px
+            );
+          background-size: 40px 40px;
+        }
+        .spotlight {
+          background: radial-gradient(
+            circle 250px at var(--mouse-x) var(--mouse-y),
+            rgba(0, 191, 255, 0.08),
+            transparent 80%
+          );
+        }
+        .animate-fade-in {
+          animation: fade-in 0.5s ease-out forwards;
+          opacity: 0;
+        }
+        .animate-slide-down {
+          animation: slide-down 0.3s ease-out forwards;
+        }
+        @keyframes fade-in {
           from {
             opacity: 0;
-            transform: translateY(8px);
+            transform: translateY(10px);
           }
           to {
             opacity: 1;
             transform: translateY(0);
           }
         }
-        @keyframes slideDown {
+        @keyframes slide-down {
           from {
             opacity: 0;
             transform: translateY(-10px);
+            max-height: 0;
           }
           to {
             opacity: 1;
             transform: translateY(0);
-          }
-        }
-        .animate-fadeIn {
-          animation: fadeIn 0.4s ease-out forwards;
-        }
-        .animate-slideDown {
-          animation: slideDown 0.3s ease-out forwards;
-        }
-        .animate-pulse-slow {
-          animation: pulse 8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
-        @keyframes pulse {
-          0%,
-          100% {
-            opacity: 1;
-          }
-          50% {
-            opacity: 0.4;
+            max-height: 500px;
           }
         }
       `}</style>

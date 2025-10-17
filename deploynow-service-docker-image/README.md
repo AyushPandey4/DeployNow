@@ -5,7 +5,7 @@ This directory contains the Docker image and supporting scripts for the DeployNo
 - Injecting environment variables
 - Building the project (if needed)
 - Uploading the build output to AWS S3
-- Logging build and deployment events to ClickHouse
+- Logging build and deployment events to Supabase
 
 ## File Overview
 
@@ -44,24 +44,20 @@ This directory contains the Docker image and supporting scripts for the DeployNo
   - Sets the correct MIME type for each file
   - Returns the public S3 website URL for the deployed project
 
-### utils/clickhouse.js
-- **Purpose:** Utility for logging build and deployment events to a ClickHouse database.
-- **What it does:**
-  - Connects to ClickHouse using credentials from environment variables
-  - Inserts log messages (with project ID and timestamp) into the `deploy_logs` table
+
 
 ### package.json & package-lock.json
 - **Purpose:** Define Node.js dependencies and lock their versions for reproducible builds.
 - **Key dependencies:**
   - `@aws-sdk/client-s3`: For S3 uploads
-  - `@clickhouse/client`: For logging to ClickHouse
+  - `@supabase/supabase-js`: For logging to Supabase
   - `dotenv`: For loading environment variables
   - `mime-types`: For correct file uploads to S3
 
 ### .env (not included)
 - **Purpose:** You may provide environment variables for AWS, ClickHouse, and user project builds. Example variables:
   - `AWS_ACCESS_KEY`, `AWS_SECRET_KEY`
-  - `CLICKHOUSE_URL`, `CLICKHOUSE_USER`, `CLICKHOUSE_PASSWORD`
+  - `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`
   - `PROJECT_ID`, `USER_ENV_VARS`, `GIT_REPOSITORY__URL`
 
 ## Usage
@@ -81,7 +77,7 @@ This directory contains the Docker image and supporting scripts for the DeployNo
 - `Dockerfile` — Docker image definition
 - `main.sh` — Entrypoint shell script
 - `script.js` — Main build/deploy logic
-- `utils/` — Helper utilities for S3 and ClickHouse
+- `utils/` — Helper utilities for S3 and logging
 - `package.json`, `package-lock.json` — Node.js dependencies
 
 ---

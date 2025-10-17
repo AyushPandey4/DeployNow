@@ -13,7 +13,7 @@ DeployNow is a **self-hosted deployment platform** that automates containerized 
 - **Backend**: Node.js, Express.js
 - **Containerization & Orchestration**: Docker, AWS ECS
 - **Authentication**: GitHub OAuth
-- **Logs & Monitoring**: AWS CloudWatch, ClickHouse
+- **Logs & Monitoring**: AWS CloudWatch, Supabase
 - **Queue Management**: BullMQ, Redis (Upstash Redis)
 - **Database**: Supabase (for metadata storage)
 - **Cloud Storage**: AWS S3
@@ -23,7 +23,7 @@ DeployNow is a **self-hosted deployment platform** that automates containerized 
 ## ✨ Features
 - 🔑 Secure GitHub login for deployment authentication.
 - ⚙️ Docker-based project deployments automated via AWS ECS.
-- 📊 Container logs collection using CloudWatch and ClickHouse.
+- 📊 Container logs collection using CloudWatch and Supabase.
 - 📥 Background job queue system powered by BullMQ and Redis.
 - 📂 File upload and project assets managed via AWS S3.
 - 🔒 Zero-downtime deployments with task health monitoring.
@@ -49,9 +49,7 @@ JWT_SECRET=xxx
 AWS_ACCESS_KEY=xxx
 AWS_SECRET_KEY=xxx
 S3_BUCKET=xxx
-CLICKHOUSE_URL=xxx
-CLICKHOUSE_USER=xxx
-CLICKHOUSE_PASSWORD=xxx
+
 REDIS_URL=xxx
 
 # Set environment variables in .env in deploynow-frontend folder
@@ -71,7 +69,7 @@ $ cd deploynow-frontend
 $ npm run dev
 ```
 
-> Ensure AWS ECS cluster, ClickHouse instance, and Upstash Redis are properly set up.
+> Ensure AWS ECS cluster, Supabase project, and Upstash Redis are properly set up.
 
 ---
 
@@ -97,9 +95,8 @@ docker run --rm \
   -e GIT_REPOSITORY__URL=https://github.com/your/repo.git \
   -e AWS_ACCESS_KEY=xxx \
   -e AWS_SECRET_KEY=xxx \
-  -e CLICKHOUSE_URL=xxx \
-  -e CLICKHOUSE_USER=xxx \
-  -e CLICKHOUSE_PASSWORD=xxx \
+  -e SUPABASE_URL=xxx \
+  -e SUPABASE_SERVICE_ROLE_KEY=xxx \
   -e USER_ENV_VARS="KEY=value" \
   deploynow-service-docker-image
 ```
@@ -108,7 +105,7 @@ docker run --rm \
 - `PROJECT_ID`: Unique project identifier.
 - `GIT_REPOSITORY__URL`: Git repository to clone and build.
 - `AWS_ACCESS_KEY` / `AWS_SECRET_KEY`: AWS credentials for S3 upload.
-- `CLICKHOUSE_URL`, `CLICKHOUSE_USER`, `CLICKHOUSE_PASSWORD`: For log storage.
+- `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`: For log storage.
 - `USER_ENV_VARS`: Custom environment variables for the build.
 
 > The same image and environment variables are used by AWS ECS for automated deployments.
@@ -130,7 +127,7 @@ docker run --rm \
 - **Frontend (optional)**: React or similar framework to interact with backend APIs.
 - **Backend**: REST APIs handle user authentication, deployment triggers, and logs.
 - **ECS Cluster**: Runs container tasks per deployment.
-- **CloudWatch + ClickHouse**: Stores and serves container logs.
+- **CloudWatch + Supabase**: Stores and serves container logs.
 - **BullMQ Queue**: Processes deployments asynchronously.
 
 ---
@@ -164,14 +161,17 @@ create table projects (
 );
 ```
 
-### ClickHouse Table: `deploy_logs`
+### Supabase Table: `deployments`
 
 ```sql
-CREATE TABLE IF NOT EXISTS deploy_logs (
-  project_id String,
-  message String,
-  timestamp DateTime
-) ENGINE = MergeTree() ORDER BY timestamp;
+CREATE TABLE deployments (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  project_id uuid REFERENCES projects(id) ON DELETE CASCADE NOT NULL,
+  status TEXT DEFAULT 'queued',
+  logs JSONB, -- This column will store the entire log file as JSON
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
 ```
 
 ---
