@@ -11,6 +11,12 @@ DeployNow is a **self-hosted deployment platform** that automates containerized 
 
 ## Demo
 
+### WorkFlow 
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/AyushPandey4/DeployNow/main/assets/WorkFlow.png" alt="Home Page" width="800">
+</p>
+
 ### 🏠 Home Page
 
 <p align="center">
