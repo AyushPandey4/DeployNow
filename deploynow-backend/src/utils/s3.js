@@ -1,7 +1,7 @@
 const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 const fs = require("fs");
 const path = require("path");
-const mime = require('mime-types');
+const mime = require("mime-types");
 require("dotenv").config();
 
 const s3 = new S3Client({
@@ -33,13 +33,13 @@ function walkDir(dir) {
 async function uploadDirToS3(directoryPath, projectId) {
   const files = walkDir(directoryPath);
 
-  for (const filePath  of files) {
+  for (const filePath of files) {
     const fileStream = fs.createReadStream(filePath);
     const relativeKey = path.relative(directoryPath, filePath);
-    const contentType = mime.lookup(filePath) || 'application/octet-stream';
+    const contentType = mime.lookup(filePath) || "application/octet-stream";
 
     const uploadParams = {
-      Bucket: "deploynow-projects", 
+      Bucket: process.env.S3_BUCKET,
       Key: `${projectId}/${relativeKey}`,
       Body: fileStream,
       ContentType: contentType,
@@ -47,9 +47,14 @@ async function uploadDirToS3(directoryPath, projectId) {
 
     await s3.send(new PutObjectCommand(uploadParams));
   }
-  console.log('✅ All files uploaded to S3');
+  console.log("✅ All files uploaded to S3");
 
-  return `http://deploynow-projects.s3-website.eu-north-1.amazonaws.com/${projectId}`;
+  if (!process.env.AWS_PROJECT_BASE_LINK) {
+    console.log(
+      "AWS_PROJECT_BASE_LINK is not defined in the environment variables."
+    );
+  }
+  return `${process.env.AWS_PROJECT_BASE_LINK}/${projectId}`;
 }
 
 module.exports = { uploadDirToS3 };

@@ -5,7 +5,6 @@ import { useProject } from "../../context/ProjectContext";
 import { Loader2, ExternalLink, RefreshCw } from "lucide-react";
 import { useUser } from "../../context/UserContext";
 
-
 // Framework badge/icon helper
 const frameworkBadge = (fw) => {
   const color = "#A3A3A3"; // Light Grey for all frameworks
@@ -104,13 +103,20 @@ export default function ProjectDetailsPage() {
     const fetchDetails = async () => {
       setLoading(true);
       const details = await getProjectDetails(id);
-      setProject(details.project || null);
-      setLogs(details.logs || []);
-      setEnvVars(details.project?.env_vars || "");
+
+      if (details && details.project) {
+        setProject(details.project);
+        setEnvVars(details.project.env_vars || "");
+        setLogs(details.logs?.[0]?.logs || []);
+      }
+
       setEnvVarsEdited(false);
       setLoading(false);
     };
-    fetchDetails();
+
+    if (id) {
+      fetchDetails();
+    }
   }, [id, getProjectDetails]);
 
   useEffect(() => {

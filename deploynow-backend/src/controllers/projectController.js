@@ -1,7 +1,6 @@
 const supabase = require("../db/supabase");
-const { fetchLogsByProjectId } = require("../clickhouse/clickhouse");
 const ecsQueue = require("../queue/ecsQueue");
-
+const {fetchLogsByProjectId} = require("../utils/logService");
 
 async function createProject(req, res) {
   const userId = req.user.userId;
@@ -57,7 +56,7 @@ async function getProjectDetails(req, res) {
       .eq("id", projectId)
       .single();
     const logs = await fetchLogsByProjectId(projectId);
-    return res.status(200).json({ project: data, logs });
+    return res.status(200).json({ project: data, logs: logs });
   } catch (err) {
     console.error("Error fetching logs:", err);
     return res.status(500).json({ error: "Failed to fetch logs" });
