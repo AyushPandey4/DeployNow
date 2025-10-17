@@ -5,11 +5,40 @@ A **Vercel-like Deployment Automation Platform** enabling users to securely depl
 ---
 
 ## 🚀 Overview
+
 DeployNow is a **self-hosted deployment platform** that automates containerized deployments using AWS ECS and Docker, featuring GitHub authentication and scalable log analytics. Built for developers seeking a lightweight alternative to commercial platforms without losing scalability and flexibility.
+
+
+## Demo
+
+### 🏠 Home Page
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/AyushPandey4/DeployNow/main/assets/Home_Page.png" alt="Home Page" width="800">
+</p>
+
+### 📊 Dashboard Page
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/AyushPandey4/DeployNow/main/assets/Dashboard_Page.png" alt="Dashboard Page" width="800">
+</p>
+
+### 📜 Logs Page
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/AyushPandey4/DeployNow/main/assets/Logs_Page.png" alt="Logs Page" width="800">
+</p>
+
+### 🌐 Deployed Site
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/AyushPandey4/DeployNow/main/assets/Deployed_Page.png" alt="Deployed Site" width="800">
+</p>
 
 ---
 
 ## 🛠️ Tech Stack
+
 - **Backend**: Node.js, Express.js
 - **Containerization & Orchestration**: Docker, AWS ECS
 - **Authentication**: GitHub OAuth
@@ -21,6 +50,7 @@ DeployNow is a **self-hosted deployment platform** that automates containerized 
 ---
 
 ## ✨ Features
+
 - 🔑 Secure GitHub login for deployment authentication.
 - ⚙️ Docker-based project deployments automated via AWS ECS.
 - 📊 Container logs collection using CloudWatch and Supabase.
@@ -102,6 +132,7 @@ docker run --rm \
 ```
 
 **Environment Variables:**
+
 - `PROJECT_ID`: Unique project identifier.
 - `GIT_REPOSITORY__URL`: Git repository to clone and build.
 - `AWS_ACCESS_KEY` / `AWS_SECRET_KEY`: AWS credentials for S3 upload.
@@ -177,6 +208,7 @@ CREATE TABLE deployments (
 ---
 
 ## 📊 Future Improvements
+
 - Custom domain support with SSL provisioning.
 - Frontend dashboard with real-time WebSocket log streaming.
 - Cost monitoring and analytics dashboard.
@@ -187,9 +219,11 @@ CREATE TABLE deployments (
 ---
 
 ## 🤝 Contributing
+
 Contributions welcome! Open an issue or submit a pull request.
 
 ---
 
 ## 📄 License
+
 MIT License
