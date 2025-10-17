@@ -37,30 +37,7 @@ const worker = new Worker(
         env_vars: formattedEnvVars,
       });
       console.log(`✅ ECS Task triggered for project ${projectId}:`, taskArn);
-
-      // await new Promise((r) => setTimeout(r, 10000)); // flush logs
-
-      // console.log("✅ Logs saved to Database");
-
-      // const s3Url = `${process.env.AWS_PROJECT_BASE_LINK}/${projectId}/index.html`;
-
-      // await supabase
-      //   .from("deployments")
-      //   .update({
-      //     status: "deployed",
-      //   })
-      //   .eq("project_id", projectId);
-      // await supabase
-      //   .from("projects")
-      //   .update({
-      //     status: "deployed",
-      //     preview_url: s3Url,
-      //   })
-      //   .eq("id", projectId);
-
-      // console.log(`🌐 S3 Preview URL saved: ${s3Url}`);
     } catch (err) {
-      // If triggering the ECS task itself fails, update the record to 'failed'
       await supabase
         .from("deployments")
         .update({ status: "failed" })
